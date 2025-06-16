@@ -57,6 +57,73 @@
 - Jenkins: 8080
 - Jenkins Agent: 50000
 
+## 脚本说明
+
+项目包含以下管理脚本：
+
+### 1. 部署脚本 (deploy.sh)
+
+用于部署和管理整个开发环境。
+
+```bash
+# 安装服务
+./deploy.sh --install
+
+# 卸载服务
+./deploy.sh --uninstall
+
+# 重启服务
+./deploy.sh --restart
+
+# 查看服务状态
+./deploy.sh --status
+```
+
+### 2. 健康检查脚本 (scripts/health_check.sh)
+
+用于检查各个服务的健康状态。
+
+```bash
+# 检查所有服务
+./scripts/health_check.sh --all
+
+# 只检查服务状态
+./scripts/health_check.sh --status
+
+# 只检查资源使用情况
+./scripts/health_check.sh --resources
+
+# 只检查服务日志
+./scripts/health_check.sh --logs
+```
+
+### 3. 备份和恢复脚本 (scripts/backup.sh)
+
+用于备份和恢复各个服务的数据。
+
+```bash
+# 备份所有服务数据
+./scripts/backup.sh --backup
+
+# 从备份文件恢复
+./scripts/backup.sh --restore <backup_file>
+```
+
+### 4. 日志管理脚本 (scripts/log_manage.sh)
+
+用于收集、分析和清理服务日志。
+
+```bash
+# 收集所有服务日志
+./scripts/log_manage.sh --collect
+
+# 清理指定天数前的日志
+./scripts/log_manage.sh --cleanup <days>
+
+# 分析所有服务日志错误
+./scripts/log_manage.sh --analyze
+```
+
 ## 快速开始
 
 ### 环境要求
