@@ -6,7 +6,9 @@
 
 项目包含以下核心组件：
 
-- **消息队列**：Kafka 集群（3个节点）和 Kafka Manager 管理界面
+- **消息队列**：
+  - Kafka 集群（3个节点）和 Kafka Manager 管理界面
+  - RabbitMQ 集群（3个节点）和 Management 管理界面
 - **数据库**：
   - MySQL 5.7
   - MongoDB 3.4
@@ -14,6 +16,12 @@
 - **搜索引擎**：
   - Elasticsearch 7.9.3
   - Kibana 7.9.3
+- **监控系统**：
+  - Prometheus：指标收集和告警
+  - Grafana：可视化监控面板
+  - AlertManager：告警管理
+  - Node Exporter：主机监控
+  - cAdvisor：容器监控
 - **服务发现与配置中心**：etcd 3.3.10
 - **监控与追踪**：
   - Hystrix Dashboard：服务监控面板
@@ -27,6 +35,8 @@
 - Hystrix Dashboard: 8088
 - Kafka: 9092-9094
 - Kafka Manager: 9000
+- RabbitMQ: 5672-5674
+- RabbitMQ Management: 15672-15674
 - MongoDB: 27017
 - MySQL: 3306
 - Redis: 6379
@@ -34,6 +44,14 @@
 - Jaeger: 16686 (UI), 5775, 6831, 6832 (UDP), 5778, 14268, 9411
 - Elasticsearch: 9200, 9300
 - Kibana: 5601
+- Prometheus: 9090
+- AlertManager: 9093
+- Grafana: 3000
+- Node Exporter: 9100
+- cAdvisor: 8080
+- MySQL Exporter: 9104
+- Redis Exporter: 9121
+- MongoDB Exporter: 9216
 
 ## 快速开始
 
@@ -58,6 +76,33 @@ bash deploy.sh --install
 1. 检查服务状态
 
 在改项目根目录执行 `docker-compose ps` 可以查看服务状态，`State` 栏为 `Up` 时代表服务正常
+
+### 监控系统使用说明
+
+1. 访问 Grafana
+   - Web界面: http://localhost:3000
+   - 默认用户名: admin
+   - 默认密码: admin
+
+2. 访问 Prometheus
+   - Web界面: http://localhost:9090
+   - 查询界面: http://localhost:9090/graph
+
+3. 访问 AlertManager
+   - Web界面: http://localhost:9093
+
+4. 预配置的监控项
+   - 主机监控：CPU、内存、磁盘使用率
+   - 容器监控：资源使用、性能指标
+   - 服务监控：MySQL、Redis、MongoDB、Elasticsearch、RabbitMQ
+   - 应用监控：HTTP 请求延迟、错误率
+
+5. 告警规则
+   - CPU 使用率超过 80%
+   - 内存使用率超过 85%
+   - 磁盘使用率超过 85%
+   - 服务不可用超过 1 分钟
+   - HTTP 请求延迟超过 1 秒
 
 ### Elasticsearch 使用说明
 
