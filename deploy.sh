@@ -209,10 +209,116 @@ cd $dir; docker-compose up -d
     fi
 }
 
+function check_resources() {
+    # 检查内存
+    total_mem=$(free -m | awk '/^Mem:/{print $2}')
+    if [ "$total_mem" -lt 4096 ]; then
+        warn "系统内存小于 4GB，可能会影响服务性能"
+    fi
+
+    # 检查磁盘空间
+    free_space=$(df -m . | awk 'NR==2 {print $4}')
+    if [ "$free_space" -lt 20480 ]; then
+        warn "可用磁盘空间小于 20GB，可能会影响服务运行"
+    fi
+}
+
+function create_directories() {
+    h2 "[Step $item]: creating necessary directories ..."
+    let item+=1
+    
+    # 创建数据目录
+    mkdir -p data/{mysql,mongodb,redis,etcd,kafka,rabbitmq,elasticsearch,jenkins}
+    
+    # 创建日志目录
+    mkdir -p logs/{mysql,mongodb,redis,etcd,kafka,rabbitmq,elasticsearch,jenkins}
+    
+    # 创建配置目录
+    mkdir -p config/{mysql,mongodb,redis,etcd,kafka,rabbitmq,elasticsearch,jenkins}
+    
+    # 设置目录权限
+    chmod -R 777 data logs config
+}
+
+function init_jenkins() {
+    h2 "[Step $item]: initializing Jenkins ..."
+    let item+=1
+    
+    # 复制 Jenkins 配置文件
+    cp -r jenkins/* config/jenkins/
+    
+    # 设置 Jenkins 目录权限
+    chmod -R 777 config/jenkins
+    chmod -R 777 data/jenkins
+    
+    # 等待 Jenkins 容器启动
+    h2 "[Step $item]: waiting for Jenkins container to start ..."
+    let item+=1
+    sleep 30
+    
+    # 执行 Jenkins 初始化脚本
+    docker exec jenkins /var/jenkins_home/init/init.sh
+}
+
+function start_services() {
+    h2 "[Step $item]: starting services ..."
+    let item+=1
+    docker-compose up -d
+    
+    # 等待服务启动
+    h2 "[Step $item]: waiting for services to start ..."
+    let item+=1
+    sleep 10
+}
+
+function check_services() {
+    h2 "[Step $item]: checking service status ..."
+    let item+=1
+    
+    # 检查所有服务
+    if docker-compose ps | grep -q "Exit"; then
+        error "部分服务启动失败，请检查日志"
+        docker-compose ps
+        exit 1
+    fi
+    
+    success "所有服务启动成功"
+}
+
+function show_access_info() {
+    h2 "[Step $item]: displaying service access information ..."
+    let item+=1
+    echo "----------------------------------------"
+    echo "Jenkins: http://localhost:8080"
+    echo "默认用户名: admin"
+    echo "默认密码: admin"
+    echo "----------------------------------------"
+    echo "Kafka Manager: http://localhost:9000"
+    echo "RabbitMQ Management: http://localhost:15672"
+    echo "默认用户名: guest"
+    echo "默认密码: guest"
+    echo "----------------------------------------"
+    echo "Grafana: http://localhost:3000"
+    echo "默认用户名: admin"
+    echo "默认密码: admin"
+    echo "----------------------------------------"
+    echo "Prometheus: http://localhost:9090"
+    echo "AlertManager: http://localhost:9093"
+    echo "----------------------------------------"
+    echo "Jaeger UI: http://localhost:16686"
+    echo "----------------------------------------"
+    echo "Kibana: http://localhost:5601"
+    echo "----------------------------------------"
+}
+
 before_start
 init_data_dir
 check_docker
 check_dockercompose
-build_docker_image
-init_by_compose
+check_resources
+create_directories
+start_services
+init_jenkins
+check_services
+show_access_info
 make_auto_start
