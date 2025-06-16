@@ -1,0 +1,73 @@
+jenkins:
+  systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
+  numExecutors: 2
+  scmCheckoutRetryCount: 3
+  mode: NORMAL
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin"
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - name: "admin"
+            description: "Jenkins administrators"
+            permissions:
+              - "Overall/Administer"
+            assignments:
+              - "admin"
+          - name: "developer"
+            description: "Jenkins developers"
+            permissions:
+              - "Overall/Read"
+              - "Job/Build"
+              - "Job/Read"
+            assignments:
+              - "developer"
+
+jobs:
+  - script: >
+      pipelineJob('build-and-deploy') {
+        definition {
+          cps {
+            script('''
+              pipeline {
+                agent any
+                stages {
+                  stage('Checkout') {
+                    steps {
+                      checkout scm
+                    }
+                  }
+                  stage('Build') {
+                    steps {
+                      sh 'docker-compose build'
+                    }
+                  }
+                  stage('Test') {
+                    steps {
+                      sh 'docker-compose run --rm test'
+                    }
+                  }
+                  stage('Deploy') {
+                    steps {
+                      sh 'docker-compose up -d'
+                    }
+                  }
+                }
+              }
+            ''')
+          }
+        }
+      }
+
+unclassified:
+  location:
+    url: http://localhost:8080
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    apiRateLimitChecker: ThrottleForNormalize 

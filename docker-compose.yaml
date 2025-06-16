@@ -403,11 +403,34 @@ services:
       - mongo
     restart: always
 
+  # jenkins
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    volumes:
+      - ./jenkins/jenkins.yaml:/var/jenkins_home/casc.yaml
+      - ./jenkins/plugins.txt:/usr/share/jenkins/ref/plugins.txt
+      - ./jenkins/init:/usr/local/bin/init
+      - ./data/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JENKINS_OPTS="--httpPort=-1 --httpsPort=8080"
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/casc.yaml
+      - JENKINS_SLAVE_AGENT_PORT=50000
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    networks:
+      - jenkins
+    restart: always
+
 networks:
   elastic:
     driver: bridge
   rabbitmq:
     driver: bridge
   monitoring:
+    driver: bridge
+  jenkins:
     driver: bridge
 

@@ -22,6 +22,8 @@
   - AlertManager：告警管理
   - Node Exporter：主机监控
   - cAdvisor：容器监控
+- **CI/CD**：
+  - Jenkins：持续集成和部署
 - **服务发现与配置中心**：etcd 3.3.10
 - **监控与追踪**：
   - Hystrix Dashboard：服务监控面板
@@ -52,6 +54,8 @@
 - MySQL Exporter: 9104
 - Redis Exporter: 9121
 - MongoDB Exporter: 9216
+- Jenkins: 8080
+- Jenkins Agent: 50000
 
 ## 快速开始
 
@@ -76,6 +80,44 @@ bash deploy.sh --install
 1. 检查服务状态
 
 在改项目根目录执行 `docker-compose ps` 可以查看服务状态，`State` 栏为 `Up` 时代表服务正常
+
+### Jenkins 使用说明
+
+1. 访问 Jenkins
+   - Web界面: http://localhost:8080
+   - 默认用户名: admin
+   - 默认密码: admin
+
+2. 预配置的插件
+   - Pipeline：流水线支持
+   - Git：版本控制
+   - Docker：容器支持
+   - Kubernetes：容器编排
+   - Prometheus：监控集成
+   - Blue Ocean：流水线可视化
+   - 其他实用插件
+
+3. 预配置的流水线
+   - build-and-deploy：构建和部署流水线
+   - 包含以下阶段：
+     - Checkout：检出代码
+     - Build：构建镜像
+     - Test：运行测试
+     - Deploy：部署服务
+
+4. 安全配置
+   - 基于角色的访问控制
+   - 预配置用户角色：
+     - admin：管理员权限
+     - developer：开发者权限
+
+5. 集成功能
+   - Docker 构建支持
+   - Git 仓库集成
+   - 邮件通知
+   - Slack 通知
+   - 测试报告
+   - 构建历史
 
 ### 监控系统使用说明
 
