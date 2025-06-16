@@ -1,0 +1,22 @@
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+
+# 最小主节点数
+discovery.zen.minimum_master_nodes: 1
+
+# 跨域设置
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+
+# 内存设置
+bootstrap.memory_lock: true
+
+# 安全设置
+xpack.security.enabled: true
+xpack.security.transport.ssl.enabled: true
+
+# 性能优化
+thread_pool.write.size: 16
+thread_pool.write.queue_size: 1000
+thread_pool.search.size: 16
+thread_pool.search.queue_size: 1000 
