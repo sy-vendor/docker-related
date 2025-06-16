@@ -36,8 +36,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Service {{ $labels.job }} is down"
-          description: "Service {{ $labels.job }} has been down for more than 1 minute"
+          summary: "服务 {{ $labels.job }} 已停止运行"
+          description: "服务 {{ $labels.job }} 已经停止运行超过 1 分钟"
 
       - alert: HighLatency
         expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
@@ -46,4 +46,94 @@ groups:
           severity: warning
         annotations:
           summary: "High latency detected"
-          description: "95th percentile latency is above 1s for 5 minutes" 
+          description: "95th percentile latency is above 1s for 5 minutes"
+
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "服务 {{ $labels.job }} CPU 使用率过高"
+          description: "服务 {{ $labels.job }} CPU 使用率超过 80% 已持续 5 分钟"
+
+      - alert: HighMemoryUsage
+        expr: (process_resident_memory_bytes / container_spec_memory_limit_bytes) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "服务 {{ $labels.job }} 内存使用率过高"
+          description: "服务 {{ $labels.job }} 内存使用率超过 80% 已持续 5 分钟"
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "磁盘使用率过高"
+          description: "磁盘 {{ $labels.mountpoint }} 使用率超过 80% 已持续 5 分钟"
+
+      - alert: HighResponseTime
+        expr: http_request_duration_seconds{quantile="0.9"} > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "服务 {{ $labels.job }} 响应时间过长"
+          description: "服务 {{ $labels.job }} 90% 的请求响应时间超过 1 秒已持续 5 分钟"
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "服务 {{ $labels.job }} 错误率过高"
+          description: "服务 {{ $labels.job }} 错误率超过 5% 已持续 5 分钟"
+
+      - alert: HighConnectionCount
+        expr: node_netstat_Tcp_CurrEstab > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "服务 {{ $labels.job }} 连接数过高"
+          description: "服务 {{ $labels.job }} 当前连接数超过 1000 已持续 5 分钟"
+
+      - alert: QueueBacklog
+        expr: rabbitmq_queue_messages > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RabbitMQ 队列积压"
+          description: "队列 {{ $labels.queue }} 消息积压超过 1000 条已持续 5 分钟"
+
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_group_lag > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka 消费延迟"
+          description: "消费者组 {{ $labels.group }} 消费延迟超过 1000 条消息已持续 5 分钟"
+
+      - alert: ElasticsearchClusterStatus
+        expr: elasticsearch_cluster_health_status > 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Elasticsearch 集群状态异常"
+          description: "Elasticsearch 集群状态不是绿色已持续 5 分钟"
+
+      - alert: JenkinsBuildFailure
+        expr: jenkins_builds_failed_total > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Jenkins 构建失败"
+          description: "Jenkins 有构建任务失败已持续 5 分钟" 

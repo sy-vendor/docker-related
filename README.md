@@ -232,3 +232,77 @@ bash deploy.sh --install
    - 已配置内存锁定
    - 优化了线程池设置
    - 启用了安全特性
+
+## 监控告警
+
+项目集成了 Prometheus 和 AlertManager 进行监控告警，主要监控以下指标：
+
+1. **服务状态**：
+   - 服务是否正常运行
+   - 服务响应时间
+   - 服务错误率
+
+2. **资源使用**：
+   - CPU 使用率
+   - 内存使用率
+   - 磁盘使用率
+   - 网络连接数
+
+3. **业务指标**：
+   - RabbitMQ 队列积压
+   - Kafka 消费延迟
+   - Elasticsearch 集群状态
+   - Jenkins 构建状态
+
+告警规则配置文件位于 `prometheus/rules/alerts.yml`，可以根据需要修改告警阈值。
+
+## 定时任务
+
+项目配置了以下定时任务：
+
+1. **数据备份**：
+   - 每天凌晨 2 点执行全量备份
+   - 备份文件保存在 `backups` 目录
+
+2. **日志管理**：
+   - 每天凌晨 4 点收集所有服务日志
+   - 每周日凌晨 3 点清理 30 天前的日志
+
+3. **健康检查**：
+   - 每小时执行一次健康检查
+   - 检查结果保存在 `logs` 目录
+
+定时任务配置文件位于 `scripts/crontab`，可以根据需要修改执行时间。
+
+## 服务依赖
+
+项目中的服务依赖关系如下：
+
+1. **基础服务**：
+   - MySQL
+   - MongoDB
+   - Redis
+
+2. **消息队列**：
+   - Kafka（依赖 ZooKeeper）
+   - RabbitMQ
+
+3. **搜索引擎**：
+   - Elasticsearch
+   - Kibana（依赖 Elasticsearch）
+
+4. **监控系统**：
+   - Prometheus
+   - AlertManager
+   - Grafana（依赖 Prometheus）
+
+5. **CI/CD**：
+   - Jenkins
+
+6. **服务发现**：
+   - etcd
+
+7. **追踪系统**：
+   - Jaeger
+
+部署脚本会自动处理服务依赖关系，确保服务按正确的顺序启动。

@@ -1,0 +1,11 @@
+# 每天凌晨 2 点执行备份
+0 2 * * * /path/to/scripts/backup.sh --backup
+
+# 每周日凌晨 3 点清理 30 天前的日志
+0 3 * * 0 /path/to/scripts/log_manage.sh --cleanup 30
+
+# 每小时执行一次健康检查
+0 * * * * /path/to/scripts/health_check.sh --all
+
+# 每天凌晨 4 点收集所有服务日志
+0 4 * * * /path/to/scripts/log_manage.sh --collect 
